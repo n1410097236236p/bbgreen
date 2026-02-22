@@ -1,5 +1,8 @@
 package jp.ponkichi.bbgreen.healthcheck;
 
+import org.springframework.stereotype.Service;
+
+@Service
 public class HealthCheckService {
-    //To do: Stringを引数に取り、Messageクラスのインスタンスを返すメソッドを追加する。
+    //Stringを引数に取り、Messageクラスのインスタンスを返すメソッドを追加する。
 }

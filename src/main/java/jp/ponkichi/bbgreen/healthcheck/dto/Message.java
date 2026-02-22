@@ -1,15 +1,15 @@
 package jp.ponkichi.bbgreen.healthcheck.dto;
 
-//public record Message(String text) { }
+import lombok.Getter;
 
 public class Message {
+    @Getter
     private final String text;
 
     public Message(String text) {
         this.text = text;
     }
-
-    public String getText() {
-        return text;
-    }
 }
+
+//public record Message(String text) { }
+
