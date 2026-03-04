@@ -1,9 +1,10 @@
-package jp.ponkichi.bbgreen.team;
+package jp.ponkichi.bbgreen.entity;
 
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.SoftDelete;
 
 import java.time.LocalDateTime;
 
@@ -11,6 +12,7 @@ import java.time.LocalDateTime;
 @Table(name = "teams")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@SoftDelete(columnName = "is_deleted")
 public class Team {
 
     @Id
@@ -23,7 +25,7 @@ public class Team {
     @Column(name = "created_at", insertable = false, updatable = false)
     private LocalDateTime createdAt;
 
-    protected Team(String name) {
+    private Team(String name) {
         this.name = name;
     }
 
