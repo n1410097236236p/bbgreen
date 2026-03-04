@@ -1,6 +1,7 @@
-package jp.ponkichi.bbgreen.healthcheck;
+package jp.ponkichi.bbgreen.controller;
 
-import jp.ponkichi.bbgreen.healthcheck.dto.Message;
+import jp.ponkichi.bbgreen.service.HealthCheckService;
+import jp.ponkichi.bbgreen.dto.element.Message;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -11,7 +12,7 @@ public class HealthCheckController {
 
     private final HealthCheckService healthCheckService;
 
-    @GetMapping("/healthCheck/hello")
+    @GetMapping("/api/healthCheck/hello")
     public Message hello() {
         return new Message("Hello 38252!");
     }

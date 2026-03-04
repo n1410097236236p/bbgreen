@@ -1,4 +1,4 @@
-package jp.ponkichi.bbgreen.healthcheck.dto;
+package jp.ponkichi.bbgreen.dto.element;
 
 import lombok.Getter;
 

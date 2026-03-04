@@ -1,4 +1,4 @@
-package jp.ponkichi.bbgreen.healthcheck;
+package jp.ponkichi.bbgreen.service;
 
 import org.springframework.stereotype.Service;
 
