@@ -31,6 +31,9 @@ build/
 
 ### VS Code ###
 .vscode/
+!.vsccode/settings.json
+!.vscode/extensions.json
+!.vscode/launch.json
 
 ### MacOS ###
 .DS_Store

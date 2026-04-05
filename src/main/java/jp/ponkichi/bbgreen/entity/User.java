@@ -22,7 +22,7 @@ public class User {
     private String username;
 
     @Column(nullable = false)
-    private String password; //hashed
+    private String password; // hashed
 
     @Column(unique = true, length = 100)
     private String email;
