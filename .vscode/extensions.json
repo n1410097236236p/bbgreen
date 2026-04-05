@@ -1,19 +1,19 @@
 {
   "recommendations": [
-    // Java開発の必須セット（補完、デバッグ、Maven/Gradle連携など）
+    // java
     "redhat.java",
     "vscjava.vscode-java-debug",
     "vscjava.vscode-java-test",
     "vscjava.vscode-maven",
 
-    // Spring Boot開発の必須セット
+    // Spring Boot
     "vscjava.vscode-spring-boot-pack",
 
-    // コード規約・品質チェック（リンター）
+    // コード品質
     "vscjava.vscode-checkstyle",
     "sonarsource.sonarlint-vscode",
 
-    // チーム開発であると便利なもの
+    // その他
     "editorconfig.editorconfig"
   ]
 }

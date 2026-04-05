@@ -1,5 +1,6 @@
 package jp.ponkichi.bbgreen.service;
 
+import jp.ponkichi.bbgreen.dto.converter.PasswordEncodedConverter;
 import jp.ponkichi.bbgreen.entity.Team;
 import jp.ponkichi.bbgreen.entity.TeamUser;
 import jp.ponkichi.bbgreen.entity.User;
@@ -12,6 +13,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.Arrays;
 import java.util.List;
@@ -66,7 +68,8 @@ public class TeamServiceTest {
 
         when(userRepository.findByUsername(username)).thenReturn(Optional.of(testUser));
         when(teamRepository.save(any(Team.class))).thenReturn(testTeam);
-        when(teamUserRepository.save(any(TeamUser.class))).thenReturn(any(TeamUser.class)); // Can mock this as well if needed
+        when(teamUserRepository.save(any(TeamUser.class))).thenReturn(any(TeamUser.class)); // Can mock this as well if
+                                                                                            // needed
 
         Team createdTeam = teamService.createTeam(teamName, username);
 
@@ -181,7 +184,7 @@ public class TeamServiceTest {
 
     @Test
     void getTeamWatchers_shouldReturnWatcherIds() {
-        Long[] userIds = {1L, 2L};
+        Long[] userIds = { 1L, 2L };
         when(teamUserRepository.findUserIdsByTeamId(1L)).thenReturn(userIds);
         Long[] result = teamService.getTeamWatchers(1L);
         assertNotNull(result);

@@ -7,6 +7,8 @@ import jp.ponkichi.bbgreen.entity.User;
 import jp.ponkichi.bbgreen.repository.TeamUserRepository;
 import jp.ponkichi.bbgreen.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -33,8 +35,9 @@ public class TeamService {
         return savedTeam;
     }
 
-    public Team getTeamById(Long teamId) {
-        return teamRepository.findById(teamId).orElse(null);
+    public Team getTeamById(@NonNull Long teamId) {
+        return teamRepository.findById(teamId).orElseThrow(
+                () -> new IllegalArgumentException("Team not found"));
     }
 
     public List<Team> getAllTeams() {
@@ -42,8 +45,8 @@ public class TeamService {
     }
 
     public Team updateTeam(Long teamId, String name) {
-        Team team = teamRepository.findById(teamId)
-                .orElseThrow(() -> new IllegalArgumentException("Team not found"));
+        Team team = teamRepository.findById(teamId).orElseThrow(
+                () -> new IllegalArgumentException("Team not found"));
         team.changeName(name);
         return teamRepository.save(team);
     }

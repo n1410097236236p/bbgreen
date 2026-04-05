@@ -1,14 +1,11 @@
-# これが一番上の設定ファイルだよ、という宣言
 root = true
 
-# すべてのファイルに対する共通設定
 [*]
-charset = utf-8           # 文字コードはUTF-8
-end_of_line = lf          # 改行コードはLF（ここが大事！）
-insert_final_newline = true # ファイルの最後には必ず空行を入れる
-indent_style = space      # インデントはスペースにする
-indent_size = 4           # インデントの幅は4つ
+charset = utf-8
+end_of_line = lf
+insert_final_newline = true
+indent_style = space
+indent_size = 4
 
-# Javaファイル専用の追加ルール
 [*.java]
 indent_size = 4

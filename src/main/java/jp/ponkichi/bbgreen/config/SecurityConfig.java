@@ -43,12 +43,11 @@ public class SecurityConfig implements WebMvcConfigurer {
                                 "/swagger-ui/**",
                                 "/swagger-ui/index.html",
                                 "/swagger-resources/**",
-                                "/webjars/**"
-                        ).permitAll() // for development
+                                "/webjars/**")
+                        .permitAll() // for development
                         .requestMatchers("/api/auth/login").permitAll()
                         .requestMatchers("/api/healthCheck/**").permitAll()
-                        .anyRequest().authenticated()
-                )
+                        .anyRequest().authenticated())
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();

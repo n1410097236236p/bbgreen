@@ -1,52 +1,55 @@
 package jp.ponkichi.bbgreen.entity;
 
 import jakarta.persistence.*;
-import jakarta.persistence.Table;
+import jp.ponkichi.bbgreen.dto.element.Password;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.time.LocalDateTime;
 
+import org.springframework.lang.NonNull;
+import org.springframework.security.crypto.password.PasswordEncoder;
+
 @Entity
 @Table(name = "users")
-@Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Getter
     private Long id;
 
     @Column(nullable = false, unique = true, length = 50)
+    @Getter
+    @Setter
     private String username;
 
     @Column(nullable = false)
-    private String password; // hashed
+    @Setter
+    private Password.Encoded password;
 
     @Column(unique = true, length = 100)
+    @Getter
+    @Setter
     private String email;
 
     @Column(name = "created_at", insertable = false, updatable = false)
     private LocalDateTime createdAt;
 
-    private User(String username, String password, String email) {
-        this.username = username;
-        this.password = password;
-        this.email = email;
+    public static User of(
+            @NonNull String username,
+            @NonNull Password.Raw rawPassword,
+            @NonNull PasswordEncoder passwordEncoder) {
+        User user = new User();
+        user.setUsername(username);
+        user.setPassword(new Password.Encoded(rawPassword.encode(passwordEncoder)));
+        return user;
     }
 
-    public static User of(String username, String encodedPassword, String email) {
-        if (username == null || username.isBlank()) {
-            throw new IllegalArgumentException("userName is required");
-        }
-        if (encodedPassword == null || encodedPassword.isBlank()) {
-            throw new IllegalArgumentException("password is required");
-        }
-        return new User(username, encodedPassword, email);
-    }
-
-    public void updatePassword(String newPassword) {
-        this.password = newPassword;
+    public boolean checkPassword(Password.Raw rawPassword, PasswordEncoder passwordEncoder) {
+        return this.password.matches(rawPassword, passwordEncoder);
     }
 }

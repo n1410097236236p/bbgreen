@@ -26,7 +26,7 @@ public class TeamUser implements Serializable {
     @JoinColumn(name = "user_id")
     private User user;
 
-    public TeamUser(Team team, User user) {
+    private TeamUser(Team team, User user) {
         this.id = new TeamUserId(team.getId(), user.getId());
         this.team = team;
         this.user = user;
@@ -50,8 +50,10 @@ public class TeamUser implements Serializable {
 
         @Override
         public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
+            if (this == o)
+                return true;
+            if (o == null || getClass() != o.getClass())
+                return false;
             TeamUserId that = (TeamUserId) o;
             return Objects.equals(teamId, that.teamId) &&
                     Objects.equals(userId, that.userId);
@@ -65,8 +67,10 @@ public class TeamUser implements Serializable {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
         TeamUser teamUser = (TeamUser) o;
         return Objects.equals(id, teamUser.id);
     }
