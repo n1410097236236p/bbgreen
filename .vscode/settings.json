@@ -1,0 +1,11 @@
+{
+  // Javaファイルを保存したときに自動でコードを整形する
+  "[java]": {
+    "editor.formatOnSave": true,
+    "editor.defaultFormatter": "redhat.java"
+  }
+
+  ,
+  "files.eol": "\n",
+  "java.compile.nullAnalysis.mode": "automatic"
+}
