@@ -32,4 +32,18 @@ public class JwtProvider {
                 .signWith(key)
                 .compact();
     }
+
+    public String getUsernameFromToken(String token) {
+        try {
+            return Jwts.parser()
+                    .verifyWith(key)
+                    .build()
+                    .parseSignedClaims(token)
+                    .getPayload()
+                    .getSubject();
+        } catch (Exception e) {
+            // トークンが改ざんされている、または期限切れの場合
+            return null;
+        }
+    }
 }

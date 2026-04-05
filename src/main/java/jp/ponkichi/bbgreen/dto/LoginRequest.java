@@ -1,4 +1,6 @@
 package jp.ponkichi.bbgreen.dto;
 
-public record LoginRequest (String username, String password) {
+import jp.ponkichi.bbgreen.dto.element.Password;
+
+public record LoginRequest (String username, Password.Raw password) {
 }
