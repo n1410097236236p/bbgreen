@@ -1,10 +1,21 @@
 {
   "[java]": {
+    "editor.detectIndentation": false,
     "editor.formatOnSave": true,
-    "editor.defaultFormatter": "redhat.java"
-  }
-
-  ,
+    "editor.defaultFormatter": "redhat.java",
+    // 追記：インポート文の整理を自動化
+    "editor.codeActionsOnSave": {
+      "source.organizeImports": "explicit"
+    }
+  },
   "files.eol": "\n",
-//   "java.compile.nullAnalysis.mode": "automatic"
+  
+  // Google StyleをRed Hat Javaに読み込ませる設定
+  "java.format.settings.url": "https://raw.githubusercontent.com/google/styleguide/gh-pages/eclipse-java-google-style.xml",
+  "java.format.settings.profile": "GoogleStyle",
+
+  // 補足：インデントなどの基本設定（規約はスペース2つ）
+  "editor.detectIndentation": false,
+  "editor.tabSize": 2,
+  "editor.insertSpaces": true
 }
