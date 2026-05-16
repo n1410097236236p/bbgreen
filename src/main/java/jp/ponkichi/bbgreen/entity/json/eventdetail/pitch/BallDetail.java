@@ -1,7 +1,7 @@
 package jp.ponkichi.bbgreen.entity.json.eventdetail.pitch;
 
 import jp.ponkichi.bbgreen.entity.Player;
-import jp.ponkichi.bbgreen.entity.constants.EventType;
+import jp.ponkichi.bbgreen.entity.constants.ActionType;
 import jp.ponkichi.bbgreen.entity.json.eventdetail.EventDetail;
 
 public class BallDetail extends PitchInfo implements EventDetail {
@@ -10,8 +10,8 @@ public class BallDetail extends PitchInfo implements EventDetail {
   }
 
   @Override
-  public EventType getEventType() {
-    return EventType.BALL;
+  public ActionType getEventType() {
+    return ActionType.BALL;
   }
 
   public static BallDetail of(Player pitcher, Player batter) {

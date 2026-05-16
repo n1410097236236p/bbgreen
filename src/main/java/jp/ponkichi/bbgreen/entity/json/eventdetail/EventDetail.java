@@ -2,7 +2,7 @@ package jp.ponkichi.bbgreen.entity.json.eventdetail;
 
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import jp.ponkichi.bbgreen.entity.constants.EventType;
+import jp.ponkichi.bbgreen.entity.constants.ActionType;
 import jp.ponkichi.bbgreen.entity.json.eventdetail.atbat.BallsInPlayOutDetail;
 import jp.ponkichi.bbgreen.entity.json.eventdetail.atbat.DoubleDetail;
 import jp.ponkichi.bbgreen.entity.json.eventdetail.atbat.FourBallsDetail;
@@ -42,8 +42,8 @@ import jp.ponkichi.bbgreen.entity.json.eventdetail.running.TagUpDetail;
     @JsonSubTypes.Type(value = StrikeDetail.class, name = "STRIKE"),
     @JsonSubTypes.Type(value = SwingAndMissDetail.class, name = "SWING_AND_MISS"),
     @JsonSubTypes.Type(value = BallDetail.class, name = "BALL"),
-    @JsonSubTypes.Type(value = FoulBallDetail.class, name = "FAUL_BALL"),
-    @JsonSubTypes.Type(value = BuntFoulBallDetail.class, name = "BUNT_FAUL_BALL"),
+    @JsonSubTypes.Type(value = FoulBallDetail.class, name = "FOUL_BALL"),
+    @JsonSubTypes.Type(value = BuntFoulBallDetail.class, name = "BUNT_FOUL_BALL"),
     @JsonSubTypes.Type(value = InPlayDetail.class, name = "IN_PLAY"),
     // --- 打撃結果系 ---
     @JsonSubTypes.Type(value = SingleDetail.class, name = "SINGLE"),
@@ -76,5 +76,5 @@ import jp.ponkichi.bbgreen.entity.json.eventdetail.running.TagUpDetail;
     @JsonSubTypes.Type(value = ChangePlayerDetail.class, name = "CHANGE_PLAYER"),
     @JsonSubTypes.Type(value = ChangePositionDetail.class, name = "CHANGE_POSITION")})
 public interface EventDetail {
-  EventType getEventType();
+  ActionType getEventType();
 }

@@ -1,7 +1,7 @@
 package jp.ponkichi.bbgreen.entity.json.eventdetail.atbat;
 
 import jp.ponkichi.bbgreen.entity.constants.BattedBallType;
-import jp.ponkichi.bbgreen.entity.constants.EventType;
+import jp.ponkichi.bbgreen.entity.constants.ActionType;
 import jp.ponkichi.bbgreen.entity.constants.Position;
 import jp.ponkichi.bbgreen.entity.json.eventdetail.EventDetail;
 
@@ -12,8 +12,8 @@ public class HitByPitchDetail extends AtBatInfo implements EventDetail {
   }
 
   @Override
-  public EventType getEventType() {
-    return EventType.HIT_BY_PITCH;
+  public ActionType getEventType() {
+    return ActionType.HIT_BY_PITCH;
   }
 
   @Override

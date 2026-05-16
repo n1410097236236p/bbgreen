@@ -2,7 +2,6 @@ package jp.ponkichi.bbgreen.entity;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import javax.swing.event.DocumentEvent.EventType;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 import jakarta.persistence.Column;
@@ -17,6 +16,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import jp.ponkichi.bbgreen.entity.constants.ActionType;
 import jp.ponkichi.bbgreen.entity.json.eventdetail.EventDetail;
 import jp.ponkichi.bbgreen.entity.json.eventresult.Situation;
 import lombok.AccessLevel;
@@ -49,7 +49,7 @@ public class Event {
 
   @Enumerated(EnumType.STRING)
   @Column(name = "type", nullable = false, length = 63)
-  private EventType eventType;
+  private ActionType actionType;
 
   @JdbcTypeCode(SqlTypes.JSON)
   @Column(name = "detail")

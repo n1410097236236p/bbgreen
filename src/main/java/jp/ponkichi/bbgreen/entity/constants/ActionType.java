@@ -3,7 +3,7 @@ package jp.ponkichi.bbgreen.entity.constants;
 import lombok.Getter;
 
 @Getter
-public enum EventType {
+public enum ActionType {
   // --- 投球結果系 ---
   STRIKE(PrimitiveType.PITCH), //
   SWING_AND_MISS(PrimitiveType.PITCH), //
@@ -49,7 +49,7 @@ public enum EventType {
 
   private final PrimitiveType primitiveType;
 
-  EventType(PrimitiveType primitiveType) {
+  ActionType(PrimitiveType primitiveType) {
     this.primitiveType = primitiveType;
   }
 }
