@@ -1,0 +1,6 @@
+create team_players entity.
+create league_teams entity.
+create player controller.
+create game controller.
+create event controller.
+

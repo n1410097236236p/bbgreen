@@ -1,9 +1,7 @@
 package jp.ponkichi.bbgreen.service;
 
-import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
@@ -22,11 +20,15 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import jp.ponkichi.bbgreen.dto.element.Password;
 import jp.ponkichi.bbgreen.entity.Team;
-import jp.ponkichi.bbgreen.entity.TeamUser;
 import jp.ponkichi.bbgreen.entity.User;
+import jp.ponkichi.bbgreen.entity.intermediate.TeamWatcher;
+import jp.ponkichi.bbgreen.exception.ConflictException;
+import jp.ponkichi.bbgreen.exception.InvalidRequestException;
+import jp.ponkichi.bbgreen.exception.ResourceNotFoundException;
 import jp.ponkichi.bbgreen.repository.TeamRepository;
-import jp.ponkichi.bbgreen.repository.TeamUserRepository;
+import jp.ponkichi.bbgreen.repository.TeamWatcherRepository;
 import jp.ponkichi.bbgreen.repository.UserRepository;
+
 
 @ExtendWith(MockitoExtension.class)
 public class TeamServiceTest {
@@ -36,34 +38,32 @@ public class TeamServiceTest {
   @Mock
   private UserRepository userRepository;
   @Mock
-  private TeamUserRepository teamUserRepository;
+  private TeamWatcherRepository teamWatcherRepository;
 
   @InjectMocks
   private TeamService teamService;
 
   private Team testTeam;
   private User testUser;
+  private TeamWatcher testWatcher;
 
   @BeforeEach
   void setUp() {
     testTeam = Team.of("Test Team");
+    setId(testTeam, 1L);
 
     testUser = User.of("testuser", new Password.Encoded("password"));
+    setId(testUser, 1L);
+    testWatcher = TeamWatcher.of(testTeam.getId(), testUser.getId());
+  }
 
-    // Mock the getId() method for testTeam and testUser
-    // This is necessary because getId() is called within the service methods
-    // and Team and User are not mocks themselves.
-    // If Team and User were mocks, you would mock their behavior directly.
+  private void setId(Object entity, Long id) {
     try {
-      java.lang.reflect.Field idFieldTeam = Team.class.getDeclaredField("id");
-      idFieldTeam.setAccessible(true);
-      idFieldTeam.set(testTeam, 1L);
-
-      java.lang.reflect.Field idFieldUser = User.class.getDeclaredField("id");
-      idFieldUser.setAccessible(true);
-      idFieldUser.set(testUser, 1L);
+      java.lang.reflect.Field idField = entity.getClass().getDeclaredField("id");
+      idField.setAccessible(true);
+      idField.set(entity, id);
     } catch (NoSuchFieldException | IllegalAccessException e) {
-      e.printStackTrace();
+      throw new RuntimeException("Failed to set ID via reflection", e);
     }
   }
 
@@ -75,7 +75,7 @@ public class TeamServiceTest {
     // Mock the repository methods
     when(userRepository.findByUsername(username)).thenReturn(Optional.of(testUser));
     when(teamRepository.save(any(Team.class))).thenReturn(testTeam);
-    when(teamUserRepository.save(any(TeamUser.class))).thenReturn(any(TeamUser.class));
+    when(teamWatcherRepository.save(any(TeamWatcher.class))).thenReturn(testWatcher);
 
     Team createdTeam = teamService.createTeam(teamName, username);
 
@@ -83,7 +83,7 @@ public class TeamServiceTest {
     assertEquals(teamName, createdTeam.getName());
     verify(userRepository, times(1)).findByUsername(username);
     verify(teamRepository, times(1)).save(any(Team.class));
-    verify(teamUserRepository, times(1)).save(any(TeamUser.class));
+    verify(teamWatcherRepository, times(1)).save(any(TeamWatcher.class));
   }
 
   @Test
@@ -95,10 +95,9 @@ public class TeamServiceTest {
   }
 
   @Test
-  void getTeamById_shouldReturnNull_whenNotFound() {
+  void getTeamById_shouldThrowException_whenNotFound() {
     when(teamRepository.findById(anyLong())).thenReturn(Optional.empty());
-    Team foundTeam = teamService.getTeamById(2L);
-    assertNull(foundTeam);
+    assertThrows(ResourceNotFoundException.class, () -> teamService.getTeamById(2L));
   }
 
   @Test
@@ -122,7 +121,7 @@ public class TeamServiceTest {
   @Test
   void updateTeam_shouldThrowException_whenNotFound() {
     when(teamRepository.findById(anyLong())).thenReturn(Optional.empty());
-    assertThrows(IllegalArgumentException.class, () -> teamService.updateTeam(2L, "New Name"));
+    assertThrows(ResourceNotFoundException.class, () -> teamService.updateTeam(2L, "New Name"));
   }
 
   @Test
@@ -136,65 +135,81 @@ public class TeamServiceTest {
   void addWatcherToTeam_shouldAddWatcher() {
     when(teamRepository.findById(1L)).thenReturn(Optional.of(testTeam));
     when(userRepository.findById(1L)).thenReturn(Optional.of(testUser));
-    when(teamUserRepository.existsByTeamAndUser(testTeam, testUser)).thenReturn(false);
+    when(teamWatcherRepository.existsByTeamAndWatcher(testTeam.getId(), testUser.getId()))
+        .thenReturn(false);
 
-    teamService.addWatcherToTeam(1L, 1L);
+    teamService.addWatcherToTeam(1L, testUser.getUsername());
 
-    verify(teamUserRepository, times(1)).save(any(TeamUser.class));
+    verify(teamWatcherRepository, times(1)).save(any(TeamWatcher.class));
   }
 
   @Test
   void addWatcherToTeam_shouldThrowException_whenTeamNotFound() {
     when(teamRepository.findById(anyLong())).thenReturn(Optional.empty());
-    assertThrows(IllegalArgumentException.class, () -> teamService.addWatcherToTeam(1L, 1L));
+    assertThrows(ResourceNotFoundException.class,
+        () -> teamService.addWatcherToTeam(1L, "anyUser"));
   }
 
   @Test
   void addWatcherToTeam_shouldThrowException_whenUserNotFound() {
     when(teamRepository.findById(1L)).thenReturn(Optional.of(testTeam));
-    when(userRepository.findById(anyLong())).thenReturn(Optional.empty());
-    assertThrows(IllegalArgumentException.class, () -> teamService.addWatcherToTeam(1L, 1L));
+    when(userRepository.findByUsername(any(String.class))).thenReturn(Optional.empty());
+    assertThrows(InvalidRequestException.class,
+        () -> teamService.addWatcherToTeam(1L, "nonExistentUser"));
   }
 
   @Test
   void addWatcherToTeam_shouldThrowException_whenUserAlreadyWatcher() {
     when(teamRepository.findById(1L)).thenReturn(Optional.of(testTeam));
-    when(userRepository.findById(1L)).thenReturn(Optional.of(testUser));
-    when(teamUserRepository.existsByTeamAndUser(testTeam, testUser)).thenReturn(true);
-    assertThrows(IllegalArgumentException.class, () -> teamService.addWatcherToTeam(1L, 1L));
+    when(userRepository.findByUsername(testUser.getUsername())).thenReturn(Optional.of(testUser));
+    when(teamWatcherRepository.existsByTeamAndWatcher(testTeam.getId(), testUser.getId()))
+        .thenReturn(true);
+    assertThrows(ConflictException.class,
+        () -> teamService.addWatcherToTeam(1L, testUser.getUsername()));
   }
 
   @Test
   void removeWatcherFromTeam_shouldRemoveWatcher() {
     when(teamRepository.findById(1L)).thenReturn(Optional.of(testTeam));
-    when(userRepository.findById(1L)).thenReturn(Optional.of(testUser));
-    doNothing().when(teamUserRepository).deleteByTeamAndUser(any(Team.class), any(User.class));
+    when(userRepository.findByUsername(testUser.getUsername())).thenReturn(Optional.of(testUser));
+    doNothing().when(teamWatcherRepository).deleteByTeamAndWatcher(any(Long.class),
+        any(Long.class));
 
-    teamService.removeWatcherFromTeam(1L, 1L);
+    teamService.removeWatcherFromTeam(1L, testUser.getUsername());
 
-    verify(teamUserRepository, times(1)).deleteByTeamAndUser(testTeam, testUser);
+    verify(teamWatcherRepository, times(1)).deleteByTeamAndWatcher(testTeam.getId(),
+        testUser.getId());
   }
 
   @Test
   void removeWatcherFromTeam_shouldThrowException_whenTeamNotFound() {
     when(teamRepository.findById(anyLong())).thenReturn(Optional.empty());
-    assertThrows(IllegalArgumentException.class, () -> teamService.removeWatcherFromTeam(1L, 1L));
+    assertThrows(ResourceNotFoundException.class,
+        () -> teamService.removeWatcherFromTeam(1L, "anyUser"));
   }
 
   @Test
   void removeWatcherFromTeam_shouldThrowException_whenUserNotFound() {
     when(teamRepository.findById(1L)).thenReturn(Optional.of(testTeam));
-    when(userRepository.findById(anyLong())).thenReturn(Optional.empty());
-    assertThrows(IllegalArgumentException.class, () -> teamService.removeWatcherFromTeam(1L, 1L));
+    when(userRepository.findByUsername(any(String.class))).thenReturn(Optional.empty());
+    assertThrows(InvalidRequestException.class,
+        () -> teamService.removeWatcherFromTeam(1L, "nonExistentUser"));
   }
 
   @Test
-  void getTeamWatchers_shouldReturnWatcherIds() {
-    Long[] userIds = {1L, 2L};
-    when(teamUserRepository.findUserIdsByTeamId(1L)).thenReturn(userIds);
-    Long[] result = teamService.getTeamWatchers(1L);
-    assertNotNull(result);
-    assertEquals(2, result.length);
-    assertArrayEquals(userIds, result);
+  void getTeamsByWatcherName_shouldReturnListOfTeams() {
+    String username = "testuser";
+    List<Team> teams = Arrays.asList(testTeam, Team.of("Another Team"));
+    when(userRepository.findByUsername(username)).thenReturn(Optional.of(testUser));
+    when(teamRepository.findAllByWatcherId(testUser.getId())).thenReturn(teams);
+
+    List<Team> foundTeams = teamService.getTeamsByWatcherName(username);
+
+    assertNotNull(foundTeams);
+    assertEquals(2, foundTeams.size());
+    assertEquals("Test Team", foundTeams.get(0).getName());
+    assertEquals("Another Team", foundTeams.get(1).getName());
+    verify(userRepository, times(1)).findByUsername(username);
+    verify(teamRepository, times(1)).findAllByWatcherId(testUser.getId());
   }
 }

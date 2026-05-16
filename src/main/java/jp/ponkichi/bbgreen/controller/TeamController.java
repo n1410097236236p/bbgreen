@@ -33,27 +33,19 @@ public class TeamController {
   @GetMapping("/{teamId}")
   public ResponseEntity<Team> getTeamById(@PathVariable Long teamId) {
     Team team = teamService.getTeamById(teamId);
-    if (team != null) {
-      return new ResponseEntity<>(team, HttpStatus.OK);
-    } else {
-      return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-    }
+    return new ResponseEntity<>(team, HttpStatus.OK);
   }
 
   @GetMapping
-  public ResponseEntity<List<Team>> getAllTeams() {
-    List<Team> teams = teamService.getAllTeams();
+  public ResponseEntity<List<Team>> getMyTeams(@AuthenticationPrincipal String username) {
+    List<Team> teams = teamService.getTeamsByWatcherName(username);
     return new ResponseEntity<>(teams, HttpStatus.OK);
   }
 
   @PutMapping("/{teamId}")
   public ResponseEntity<Team> updateTeam(@PathVariable Long teamId, @RequestParam String name) {
-    try {
-      Team updatedTeam = teamService.updateTeam(teamId, name);
-      return new ResponseEntity<>(updatedTeam, HttpStatus.OK);
-    } catch (IllegalArgumentException e) {
-      return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-    }
+    Team updatedTeam = teamService.updateTeam(teamId, name);
+    return new ResponseEntity<>(updatedTeam, HttpStatus.OK);
   }
 
   @DeleteMapping("/{teamId}")
@@ -63,31 +55,17 @@ public class TeamController {
   }
 
   // Team watcher management endpoints
-  @PostMapping("/{teamId}/watchers")
+  @PostMapping("/{teamId}/watch")
   public ResponseEntity<Void> addWatcherToTeam(@PathVariable Long teamId,
-      @RequestParam Long userId) {
-    try {
-      teamService.addWatcherToTeam(teamId, userId);
-      return new ResponseEntity<>(HttpStatus.OK);
-    } catch (IllegalArgumentException e) {
-      return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-    }
+      @AuthenticationPrincipal String username) {
+    teamService.addWatcherToTeam(teamId, username);
+    return new ResponseEntity<>(HttpStatus.OK);
   }
 
-  @DeleteMapping("/{teamId}/watchers/{userId}")
+  @DeleteMapping("/{teamId}/watch")
   public ResponseEntity<Void> removeWatcherFromTeam(@PathVariable Long teamId,
-      @PathVariable Long userId) {
-    try {
-      teamService.removeWatcherFromTeam(teamId, userId);
-      return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-    } catch (IllegalArgumentException e) {
-      return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-    }
-  }
-
-  @GetMapping("/{teamId}/watchers")
-  public ResponseEntity<Long[]> getTeamWatchers(@PathVariable Long teamId) {
-    Long[] watcherIds = teamService.getTeamWatchers(teamId);
-    return new ResponseEntity<>(watcherIds, HttpStatus.OK);
+      @AuthenticationPrincipal String username) {
+    teamService.removeWatcherFromTeam(teamId, username);
+    return new ResponseEntity<>(HttpStatus.NO_CONTENT);
   }
 }
