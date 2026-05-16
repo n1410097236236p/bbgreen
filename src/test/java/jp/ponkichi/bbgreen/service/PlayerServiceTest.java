@@ -9,18 +9,15 @@ import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-
 import jp.ponkichi.bbgreen.dto.element.Password;
 import jp.ponkichi.bbgreen.entity.Player;
 import jp.ponkichi.bbgreen.entity.User;
@@ -31,6 +28,7 @@ import jp.ponkichi.bbgreen.exception.ResourceNotFoundException;
 import jp.ponkichi.bbgreen.repository.PlayerRepository;
 import jp.ponkichi.bbgreen.repository.PlayerWatcherRepository;
 import jp.ponkichi.bbgreen.repository.UserRepository;
+
 
 @ExtendWith(MockitoExtension.class)
 public class PlayerServiceTest {
@@ -88,6 +86,20 @@ public class PlayerServiceTest {
   }
 
   @Test
+  void createPlayer_shouldThrowException_whenUserNotFound() {
+    String playerName = "Test Player";
+    String username = "nonExistentUser";
+
+    when(userRepository.findByUsername(username)).thenReturn(Optional.empty());
+
+    assertThrows(InvalidRequestException.class,
+        () -> playerService.createPlayer(playerName, username));
+    verify(userRepository, times(1)).findByUsername(username);
+    verify(playerRepository, times(0)).save(any(Player.class));
+    verify(playerWatcherRepository, times(0)).save(any(PlayerWatcher.class));
+  }
+
+  @Test
   void getPlayerById_shouldReturnPlayer_whenFound() {
     when(playerRepository.findById(1L)).thenReturn(Optional.of(testPlayer));
     Player foundPlayer = playerService.getPlayerById(1L);
@@ -111,6 +123,34 @@ public class PlayerServiceTest {
   }
 
   @Test
+  void getPlayersByWatcherName_shouldReturnListOfPlayers() {
+    String username = "testuser";
+    List<Player> players = Arrays.asList(testPlayer, Player.of("Another Player"));
+    when(userRepository.findByUsername(username)).thenReturn(Optional.of(testUser));
+    when(playerRepository.findAllByWatcherId(testUser.getId())).thenReturn(players);
+
+    List<Player> foundPlayers = playerService.getPlayersByWatcherName(username);
+
+    assertNotNull(foundPlayers);
+    assertEquals(2, foundPlayers.size());
+    assertEquals("Test Player", foundPlayers.get(0).getName());
+    assertEquals("Another Player", foundPlayers.get(1).getName());
+    verify(userRepository, times(1)).findByUsername(username);
+    verify(playerRepository, times(1)).findAllByWatcherId(testUser.getId());
+  }
+
+  @Test
+  void getPlayersByWatcherName_shouldThrowException_whenUserNotFound() {
+    String username = "nonExistentUser";
+    when(userRepository.findByUsername(username)).thenReturn(Optional.empty());
+
+    assertThrows(InvalidRequestException.class,
+        () -> playerService.getPlayersByWatcherName(username));
+    verify(userRepository, times(1)).findByUsername(username);
+    verify(playerRepository, times(0)).findAllByWatcherId(anyLong());
+  }
+
+  @Test
   void updatePlayer_shouldReturnUpdatedPlayer_whenFound() {
     when(playerRepository.findById(1L)).thenReturn(Optional.of(testPlayer));
     when(playerRepository.save(any(Player.class))).thenReturn(testPlayer);
@@ -126,22 +166,37 @@ public class PlayerServiceTest {
   }
 
   @Test
-  void deletePlayer_shouldCallDeleteById() {
-    doNothing().when(playerRepository).deleteById(anyLong());
+  void deletePlayer_shouldCallDelete() {
+    when(playerRepository.findById(1L)).thenReturn(Optional.of(testPlayer));
+    doNothing().when(playerRepository).delete(any(Player.class));
+
     playerService.deletePlayer(1L);
-    verify(playerRepository, times(1)).deleteById(1L);
+
+    verify(playerRepository, times(1)).findById(1L);
+    verify(playerRepository, times(1)).delete(testPlayer);
+  }
+
+  @Test
+  void deletePlayer_shouldThrowException_whenNotFound() {
+    when(playerRepository.findById(anyLong())).thenReturn(Optional.empty());
+    assertThrows(ResourceNotFoundException.class, () -> playerService.deletePlayer(2L));
   }
 
   @Test
   void addWatcherToPlayer_shouldAddWatcher() {
     when(playerRepository.findById(1L)).thenReturn(Optional.of(testPlayer));
     when(userRepository.findByUsername(testUser.getUsername())).thenReturn(Optional.of(testUser));
-    when(playerWatcherRepository.existsById_PlayerIdAndId_UserId(testPlayer.getId(), testUser.getId()))
-        .thenReturn(false);
+    when(playerWatcherRepository.existsById_PlayerIdAndId_UserId(testPlayer.getId(),
+        testUser.getId())).thenReturn(false);
+    when(playerWatcherRepository.save(any(PlayerWatcher.class))).thenReturn(testPlayerWatcher);
 
     playerService.addWatcherToPlayer(1L, testUser.getUsername());
 
     verify(playerWatcherRepository, times(1)).save(any(PlayerWatcher.class));
+    verify(playerRepository, times(1)).findById(1L);
+    verify(userRepository, times(1)).findByUsername(testUser.getUsername());
+    verify(playerWatcherRepository, times(1)).existsById_PlayerIdAndId_UserId(testPlayer.getId(),
+        testUser.getId());
   }
 
   @Test
@@ -163,8 +218,8 @@ public class PlayerServiceTest {
   void addWatcherToPlayer_shouldThrowException_whenUserAlreadyWatcher() {
     when(playerRepository.findById(1L)).thenReturn(Optional.of(testPlayer));
     when(userRepository.findByUsername(testUser.getUsername())).thenReturn(Optional.of(testUser));
-    when(playerWatcherRepository.existsById_PlayerIdAndId_UserId(testPlayer.getId(), testUser.getId()))
-        .thenReturn(true);
+    when(playerWatcherRepository.existsById_PlayerIdAndId_UserId(testPlayer.getId(),
+        testUser.getId())).thenReturn(true);
     assertThrows(ConflictException.class,
         () -> playerService.addWatcherToPlayer(1L, testUser.getUsername()));
   }
@@ -180,6 +235,8 @@ public class PlayerServiceTest {
 
     verify(playerWatcherRepository, times(1)).deleteById_PlayerIdAndId_UserId(testPlayer.getId(),
         testUser.getId());
+    verify(playerRepository, times(1)).findById(1L);
+    verify(userRepository, times(1)).findByUsername(testUser.getUsername());
   }
 
   @Test
@@ -195,22 +252,5 @@ public class PlayerServiceTest {
     when(userRepository.findByUsername(any(String.class))).thenReturn(Optional.empty());
     assertThrows(InvalidRequestException.class,
         () -> playerService.removeWatcherFromPlayer(1L, "nonExistentUser"));
-  }
-
-  @Test
-  void getPlayersByWatcherName_shouldReturnListOfPlayers() {
-    String username = "testuser";
-    List<Player> players = Arrays.asList(testPlayer, Player.of("Another Player"));
-    when(userRepository.findByUsername(username)).thenReturn(Optional.of(testUser));
-    when(playerRepository.findAllByWatcherId(testUser.getId())).thenReturn(players);
-
-    List<Player> foundPlayers = playerService.getPlayersByWatcherName(username);
-
-    assertNotNull(foundPlayers);
-    assertEquals(2, foundPlayers.size());
-    assertEquals("Test Player", foundPlayers.get(0).getName());
-    assertEquals("Another Player", foundPlayers.get(1).getName());
-    verify(userRepository, times(1)).findByUsername(username);
-    verify(playerRepository, times(1)).findAllByWatcherId(testUser.getId());
   }
 }

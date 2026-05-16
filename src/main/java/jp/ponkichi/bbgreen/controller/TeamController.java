@@ -9,9 +9,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import jp.ponkichi.bbgreen.dto.TeamRequest;
 import jp.ponkichi.bbgreen.entity.Team;
 import jp.ponkichi.bbgreen.service.TeamService;
 import lombok.RequiredArgsConstructor;
@@ -24,9 +25,9 @@ public class TeamController {
   private final TeamService teamService;
 
   @PostMapping
-  public ResponseEntity<Team> createTeam(@RequestParam String name,
+  public ResponseEntity<Team> createTeam(@RequestBody TeamRequest request,
       @AuthenticationPrincipal String username) {
-    Team createdTeam = teamService.createTeam(name, username);
+    Team createdTeam = teamService.createTeam(request.name(), username);
     return new ResponseEntity<>(createdTeam, HttpStatus.CREATED);
   }
 
@@ -43,8 +44,8 @@ public class TeamController {
   }
 
   @PutMapping("/{teamId}")
-  public ResponseEntity<Team> updateTeam(@PathVariable Long teamId, @RequestParam String name) {
-    Team updatedTeam = teamService.updateTeam(teamId, name);
+  public ResponseEntity<Team> updateTeam(@PathVariable Long teamId, @RequestBody TeamRequest request) {
+    Team updatedTeam = teamService.updateTeam(teamId, request.name());
     return new ResponseEntity<>(updatedTeam, HttpStatus.OK);
   }
 
