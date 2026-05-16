@@ -59,7 +59,9 @@ public class PlayerService {
   }
 
   public void deletePlayer(Long playerId) {
-    playerRepository.deleteById(playerId);
+    Player player = playerRepository.findById(playerId)
+        .orElseThrow(() -> new ResourceNotFoundException("Player not found"));
+    playerRepository.delete(player);
   }
 
   @Transactional

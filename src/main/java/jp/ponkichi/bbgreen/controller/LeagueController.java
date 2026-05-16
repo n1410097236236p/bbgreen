@@ -8,9 +8,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import jp.ponkichi.bbgreen.dto.LeagueRequest;
 import jp.ponkichi.bbgreen.entity.League;
 import jp.ponkichi.bbgreen.service.LeagueService;
 import lombok.RequiredArgsConstructor;
@@ -25,9 +26,9 @@ public class LeagueController {
   private final LeagueService leagueService;
 
   @PostMapping
-  public ResponseEntity<League> createLeague(@RequestParam String name,
+  public ResponseEntity<League> createLeague(@RequestBody LeagueRequest request,
       @AuthenticationPrincipal String username) {
-    League createdLeague = leagueService.createLeague(name, username);
+    League createdLeague = leagueService.createLeague(request.name(), username);
     return new ResponseEntity<>(createdLeague, HttpStatus.CREATED);
   }
 
@@ -45,8 +46,8 @@ public class LeagueController {
 
   @PutMapping("/{leagueId}")
   public ResponseEntity<League> updateLeague(@PathVariable Long leagueId,
-      @RequestParam String name) {
-    League updatedLeague = leagueService.updateLeague(leagueId, name);
+      @RequestBody LeagueRequest request) {
+    League updatedLeague = leagueService.updateLeague(leagueId, request.name());
     return new ResponseEntity<>(updatedLeague, HttpStatus.OK);
   }
 

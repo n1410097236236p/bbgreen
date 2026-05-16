@@ -11,9 +11,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import jp.ponkichi.bbgreen.dto.SeasonRequest;
 import jp.ponkichi.bbgreen.entity.Season;
 import jp.ponkichi.bbgreen.service.SeasonService;
 import lombok.RequiredArgsConstructor;
@@ -26,11 +27,10 @@ public class SeasonController {
   private final SeasonService seasonService;
 
   @PostMapping
-  public ResponseEntity<Season> createSeason(@RequestParam String name,
-      @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
-      @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
+  public ResponseEntity<Season> createSeason(@RequestBody SeasonRequest request,
       @AuthenticationPrincipal String username) {
-    Season createdSeason = seasonService.createSeason(name, startDate, endDate, username);
+    Season createdSeason =
+        seasonService.createSeason(request.name(), request.startDate(), request.endDate(), username);
     return new ResponseEntity<>(createdSeason, HttpStatus.CREATED);
   }
 
@@ -48,9 +48,9 @@ public class SeasonController {
 
   @PutMapping("/{seasonId}")
   public ResponseEntity<Season> updateSeason(@PathVariable Long seasonId,
-      @RequestParam String name, @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
-      @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
-    Season updatedSeason = seasonService.updateSeason(seasonId, name, startDate, endDate);
+      @RequestBody SeasonRequest request) {
+    Season updatedSeason =
+        seasonService.updateSeason(seasonId, request.name(), request.startDate(), request.endDate());
     return new ResponseEntity<>(updatedSeason, HttpStatus.OK);
   }
 
