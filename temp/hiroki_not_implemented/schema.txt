@@ -1,0 +1,15 @@
+CREATE TABLE team_players (
+    team_id BIGINT NOT NULL,
+    player_id BIGINT NOT NULL,
+    PRIMARY KEY (team_id, player_id),
+    FOREIGN KEY (team_id) REFERENCES teams(id),
+    FOREIGN KEY (player_id) REFERENCES players(id)
+);
+
+CREATE TABLE league_teams (
+    league_id BIGINT NOT NULL,
+    team_id BIGINT NOT NULL,
+    PRIMARY KEY (league_id, team_id),
+    FOREIGN KEY (league_id) REFERENCES leagues(id),
+    FOREIGN KEY (team_id) REFERENCES teams(id)
+);
