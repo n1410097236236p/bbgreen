@@ -38,9 +38,12 @@ public class SecurityConfig implements WebMvcConfigurer {
     http.csrf(AbstractHttpConfigurer::disable)
         .sessionManagement(
             session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-        .authorizeHttpRequests(auth -> auth.requestMatchers(swaggerPaths).permitAll() // Swagger UI
-            .requestMatchers("/api/auth/login").permitAll().requestMatchers("/api/healthCheck/**")
-            .permitAll().anyRequest().authenticated())
+        .authorizeHttpRequests( //
+            auth -> auth.requestMatchers(swaggerPaths).permitAll() // Swagger UI
+                .requestMatchers("/api/auth/login").permitAll() // login
+                .requestMatchers("/api/auth/register").permitAll() // register
+                .requestMatchers("/api/healthCheck/**").permitAll() // health check
+                .anyRequest().authenticated())
         .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 
     return http.build();

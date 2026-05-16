@@ -135,7 +135,7 @@ public class TeamServiceTest {
   void addWatcherToTeam_shouldAddWatcher() {
     when(teamRepository.findById(1L)).thenReturn(Optional.of(testTeam));
     when(userRepository.findById(1L)).thenReturn(Optional.of(testUser));
-    when(teamWatcherRepository.existsByTeamAndWatcher(testTeam.getId(), testUser.getId()))
+    when(teamWatcherRepository.existsById_TeamIdAndId_UserId(testTeam.getId(), testUser.getId()))
         .thenReturn(false);
 
     teamService.addWatcherToTeam(1L, testUser.getUsername());
@@ -162,7 +162,7 @@ public class TeamServiceTest {
   void addWatcherToTeam_shouldThrowException_whenUserAlreadyWatcher() {
     when(teamRepository.findById(1L)).thenReturn(Optional.of(testTeam));
     when(userRepository.findByUsername(testUser.getUsername())).thenReturn(Optional.of(testUser));
-    when(teamWatcherRepository.existsByTeamAndWatcher(testTeam.getId(), testUser.getId()))
+    when(teamWatcherRepository.existsById_TeamIdAndId_UserId(testTeam.getId(), testUser.getId()))
         .thenReturn(true);
     assertThrows(ConflictException.class,
         () -> teamService.addWatcherToTeam(1L, testUser.getUsername()));
@@ -172,12 +172,12 @@ public class TeamServiceTest {
   void removeWatcherFromTeam_shouldRemoveWatcher() {
     when(teamRepository.findById(1L)).thenReturn(Optional.of(testTeam));
     when(userRepository.findByUsername(testUser.getUsername())).thenReturn(Optional.of(testUser));
-    doNothing().when(teamWatcherRepository).deleteByTeamAndWatcher(any(Long.class),
-        any(Long.class));
+    doNothing().when(teamWatcherRepository).deleteById_TeamIdAndId_UserId(testTeam.getId(),
+        testUser.getId());
 
     teamService.removeWatcherFromTeam(1L, testUser.getUsername());
 
-    verify(teamWatcherRepository, times(1)).deleteByTeamAndWatcher(testTeam.getId(),
+    verify(teamWatcherRepository, times(1)).deleteById_TeamIdAndId_UserId(testTeam.getId(),
         testUser.getId());
   }
 

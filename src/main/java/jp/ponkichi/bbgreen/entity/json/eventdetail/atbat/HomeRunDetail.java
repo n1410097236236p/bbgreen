@@ -1,7 +1,7 @@
 package jp.ponkichi.bbgreen.entity.json.eventdetail.atbat;
 
 import jp.ponkichi.bbgreen.entity.constants.BattedBallType;
-import jp.ponkichi.bbgreen.entity.constants.EventType;
+import jp.ponkichi.bbgreen.entity.constants.ActionType;
 import jp.ponkichi.bbgreen.entity.constants.Position;
 import jp.ponkichi.bbgreen.entity.json.eventdetail.EventDetail;
 
@@ -12,8 +12,8 @@ public class HomeRunDetail extends AtBatInfo implements EventDetail {
   }
 
   @Override
-  public EventType getEventType() {
-    return EventType.HOME_RUN;
+  public ActionType getEventType() {
+    return ActionType.HOME_RUN;
   }
 
   public static HomeRunDetail of(BattedBallType battedBallType, Position direction) {

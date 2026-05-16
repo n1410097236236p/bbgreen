@@ -71,7 +71,7 @@ public class LeagueService {
     User user = userRepository.findByUsername(username)
         .orElseThrow(() -> new InvalidRequestException("User not found"));
 
-    if (leagueWatcherRepository.existsByLeagueIdAndUserId(league.getId(), user.getId())) {
+    if (leagueWatcherRepository.existsById_LeagueIdAndId_UserId(league.getId(), user.getId())) {
       throw new ConflictException("User is already a watcher of this league");
     }
 
@@ -86,6 +86,6 @@ public class LeagueService {
     User user = userRepository.findByUsername(username)
         .orElseThrow(() -> new InvalidRequestException("User not found"));
 
-    leagueWatcherRepository.deleteByLeagueIdAndUserId(league.getId(), user.getId());
+    leagueWatcherRepository.deleteById_LeagueIdAndId_UserId(league.getId(), user.getId());
   }
 }

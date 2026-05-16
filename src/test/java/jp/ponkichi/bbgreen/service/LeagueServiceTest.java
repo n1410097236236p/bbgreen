@@ -144,7 +144,8 @@ public class LeagueServiceTest {
     String username = "nonExistentUser";
     when(userRepository.findByUsername(username)).thenReturn(Optional.empty());
 
-    assertThrows(InvalidRequestException.class, () -> leagueService.getLeaguesByWatcherName(username));
+    assertThrows(InvalidRequestException.class,
+        () -> leagueService.getLeaguesByWatcherName(username));
     verify(userRepository, times(1)).findByUsername(username);
     verify(leagueRepository, times(0)).findAllByWatcherId(anyLong());
   }
@@ -161,8 +162,7 @@ public class LeagueServiceTest {
   @Test
   void updateLeague_shouldThrowException_whenNotFound() {
     when(leagueRepository.findById(anyLong())).thenReturn(Optional.empty());
-    assertThrows(ResourceNotFoundException.class,
-        () -> leagueService.updateLeague(2L, "New Name"));
+    assertThrows(ResourceNotFoundException.class, () -> leagueService.updateLeague(2L, "New Name"));
   }
 
   @Test
@@ -186,8 +186,8 @@ public class LeagueServiceTest {
   void addWatcherToLeague_shouldAddWatcher() {
     when(leagueRepository.findById(1L)).thenReturn(Optional.of(testLeague));
     when(userRepository.findByUsername(testUser.getUsername())).thenReturn(Optional.of(testUser));
-    when(leagueWatcherRepository.existsByLeagueIdAndUserId(testLeague.getId(), testUser.getId()))
-        .thenReturn(false);
+    when(leagueWatcherRepository.existsById_LeagueIdAndId_UserId(testLeague.getId(),
+        testUser.getId())).thenReturn(false);
     when(leagueWatcherRepository.save(any(LeagueWatcher.class))).thenReturn(testLeagueWatcher);
 
     leagueService.addWatcherToLeague(1L, testUser.getUsername());
@@ -195,7 +195,7 @@ public class LeagueServiceTest {
     verify(leagueWatcherRepository, times(1)).save(any(LeagueWatcher.class));
     verify(leagueRepository, times(1)).findById(1L);
     verify(userRepository, times(1)).findByUsername(testUser.getUsername());
-    verify(leagueWatcherRepository, times(1)).existsByLeagueIdAndUserId(testLeague.getId(),
+    verify(leagueWatcherRepository, times(1)).existsById_LeagueIdAndId_UserId(testLeague.getId(),
         testUser.getId());
   }
 
@@ -218,8 +218,8 @@ public class LeagueServiceTest {
   void addWatcherToLeague_shouldThrowException_whenUserAlreadyWatcher() {
     when(leagueRepository.findById(1L)).thenReturn(Optional.of(testLeague));
     when(userRepository.findByUsername(testUser.getUsername())).thenReturn(Optional.of(testUser));
-    when(leagueWatcherRepository.existsByLeagueIdAndUserId(testLeague.getId(), testUser.getId()))
-        .thenReturn(true);
+    when(leagueWatcherRepository.existsById_LeagueIdAndId_UserId(testLeague.getId(),
+        testUser.getId())).thenReturn(true);
     assertThrows(ConflictException.class,
         () -> leagueService.addWatcherToLeague(1L, testUser.getUsername()));
   }
@@ -228,12 +228,12 @@ public class LeagueServiceTest {
   void removeWatcherFromLeague_shouldRemoveWatcher() {
     when(leagueRepository.findById(1L)).thenReturn(Optional.of(testLeague));
     when(userRepository.findByUsername(testUser.getUsername())).thenReturn(Optional.of(testUser));
-    doNothing().when(leagueWatcherRepository).deleteByLeagueIdAndUserId(any(Long.class),
+    doNothing().when(leagueWatcherRepository).deleteById_LeagueIdAndId_UserId(any(Long.class),
         any(Long.class));
 
     leagueService.removeWatcherFromLeague(1L, testUser.getUsername());
 
-    verify(leagueWatcherRepository, times(1)).deleteByLeagueIdAndUserId(testLeague.getId(),
+    verify(leagueWatcherRepository, times(1)).deleteById_LeagueIdAndId_UserId(testLeague.getId(),
         testUser.getId());
     verify(leagueRepository, times(1)).findById(1L);
     verify(userRepository, times(1)).findByUsername(testUser.getUsername());

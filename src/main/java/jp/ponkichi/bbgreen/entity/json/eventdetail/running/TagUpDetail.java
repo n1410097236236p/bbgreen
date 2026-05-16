@@ -2,7 +2,7 @@ package jp.ponkichi.bbgreen.entity.json.eventdetail.running;
 
 import jp.ponkichi.bbgreen.entity.Player;
 import jp.ponkichi.bbgreen.entity.constants.Base;
-import jp.ponkichi.bbgreen.entity.constants.EventType;
+import jp.ponkichi.bbgreen.entity.constants.ActionType;
 import jp.ponkichi.bbgreen.entity.json.eventdetail.EventDetail;
 
 public class TagUpDetail extends RunningInfo implements EventDetail {
@@ -11,8 +11,8 @@ public class TagUpDetail extends RunningInfo implements EventDetail {
   }
 
   @Override
-  public EventType getEventType() {
-    return EventType.TAG_UP;
+  public ActionType getEventType() {
+    return ActionType.TAG_UP;
   }
 
   public static TagUpDetail of(Player runner, Base startBase, Base endBase) {

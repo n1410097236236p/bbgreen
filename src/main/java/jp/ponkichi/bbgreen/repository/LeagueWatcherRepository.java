@@ -6,9 +6,9 @@ import jp.ponkichi.bbgreen.entity.intermediate.LeagueWatcher;
 import jp.ponkichi.bbgreen.entity.intermediate.LeagueWatcher.LeagueWatcherId;
 
 public interface LeagueWatcherRepository extends JpaRepository<LeagueWatcher, LeagueWatcherId> {
-  boolean existsByLeagueIdAndUserId(Long leagueId, Long userId);
+  boolean existsById_LeagueIdAndId_UserId(Long leagueId, Long userId);
 
-  void deleteByLeagueIdAndUserId(Long leagueId, Long userId);
+  void deleteById_LeagueIdAndId_UserId(Long leagueId, Long userId);
 
   @Query("SELECT lw.id.userId FROM LeagueWatcher lw WHERE lw.id.leagueId = :leagueId")
   Long[] findWatcherIdsByLeagueId(Long leagueId);

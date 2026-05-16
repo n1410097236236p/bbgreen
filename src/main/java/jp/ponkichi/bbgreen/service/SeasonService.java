@@ -80,7 +80,7 @@ public class SeasonService {
     User user = userRepository.findByUsername(username)
         .orElseThrow(() -> new InvalidRequestException("User not found"));
 
-    if (seasonWatcherRepository.existsBySeasonIdAndUserId(season.getId(), user.getId())) {
+    if (seasonWatcherRepository.existsById_SeasonIdAndId_UserId(season.getId(), user.getId())) {
       throw new ConflictException("User is already a watcher of this season");
     }
 
@@ -95,6 +95,6 @@ public class SeasonService {
     User user = userRepository.findByUsername(username)
         .orElseThrow(() -> new InvalidRequestException("User not found"));
 
-    seasonWatcherRepository.deleteBySeasonIdAndUserId(season.getId(), user.getId());
+    seasonWatcherRepository.deleteById_SeasonIdAndId_UserId(season.getId(), user.getId());
   }
 }

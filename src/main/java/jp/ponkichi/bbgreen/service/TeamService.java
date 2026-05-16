@@ -69,7 +69,7 @@ public class TeamService {
     User user = userRepository.findByUsername(username)
         .orElseThrow(() -> new InvalidRequestException("User not found"));
 
-    if (teamWatcherRepository.existsByTeamAndWatcher(team.getId(), user.getId())) {
+    if (teamWatcherRepository.existsById_TeamIdAndId_UserId(team.getId(), user.getId())) {
       throw new ConflictException("User is already a watcher of this team");
     }
 
@@ -84,6 +84,6 @@ public class TeamService {
     User user = userRepository.findByUsername(username)
         .orElseThrow(() -> new InvalidRequestException("User not found"));
 
-    teamWatcherRepository.deleteByTeamAndWatcher(team.getId(), user.getId());
+    teamWatcherRepository.deleteById_TeamIdAndId_UserId(team.getId(), user.getId());
   }
 }

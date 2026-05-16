@@ -1,7 +1,7 @@
 package jp.ponkichi.bbgreen.entity.json.eventdetail.other;
 
 import jp.ponkichi.bbgreen.entity.Player;
-import jp.ponkichi.bbgreen.entity.constants.EventType;
+import jp.ponkichi.bbgreen.entity.constants.ActionType;
 import jp.ponkichi.bbgreen.entity.json.eventdetail.EventDetail;
 import lombok.Getter;
 import lombok.Setter;
@@ -18,8 +18,8 @@ public class ChangePlayerDetail implements EventDetail {
   }
 
   @Override
-  public EventType getEventType() {
-    return EventType.CHANGE_PLAYER;
+  public ActionType getEventType() {
+    return ActionType.CHANGE_PLAYER;
   }
 
   public static ChangePlayerDetail of(Player outPlayer, Player inPlayer) {

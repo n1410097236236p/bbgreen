@@ -6,9 +6,9 @@ import jp.ponkichi.bbgreen.entity.intermediate.SeasonWatcher;
 import jp.ponkichi.bbgreen.entity.intermediate.SeasonWatcher.SeasonWatcherId;
 
 public interface SeasonWatcherRepository extends JpaRepository<SeasonWatcher, SeasonWatcherId> {
-  boolean existsBySeasonIdAndUserId(Long seasonId, Long userId);
+  boolean existsById_SeasonIdAndId_UserId(Long seasonId, Long userId);
 
-  void deleteBySeasonIdAndUserId(Long seasonId, Long userId);
+  void deleteById_SeasonIdAndId_UserId(Long seasonId, Long userId);
 
   @Query("SELECT sw.id.userId FROM SeasonWatcher sw WHERE sw.id.seasonId = :seasonId")
   Long[] findWatcherIdsBySeasonId(Long seasonId);

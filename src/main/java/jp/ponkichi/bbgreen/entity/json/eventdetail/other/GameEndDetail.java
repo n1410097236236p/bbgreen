@@ -1,6 +1,6 @@
 package jp.ponkichi.bbgreen.entity.json.eventdetail.other;
 
-import jp.ponkichi.bbgreen.entity.constants.EventType;
+import jp.ponkichi.bbgreen.entity.constants.ActionType;
 import jp.ponkichi.bbgreen.entity.json.eventdetail.EventDetail;
 import lombok.Getter;
 import lombok.Setter;
@@ -12,7 +12,7 @@ public class GameEndDetail implements EventDetail {
   private int[] bottomTeamScore;
 
   @Override
-  public EventType getEventType() {
-    return EventType.GAME_END;
+  public ActionType getEventType() {
+    return ActionType.GAME_END;
   }
 }

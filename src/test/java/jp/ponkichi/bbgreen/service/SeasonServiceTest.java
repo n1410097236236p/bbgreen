@@ -5,7 +5,6 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -165,7 +164,8 @@ public class SeasonServiceTest {
     when(seasonRepository.findById(1L)).thenReturn(Optional.of(testSeason));
     when(seasonRepository.save(any(Season.class))).thenReturn(testSeason);
 
-    Season updatedSeason = seasonService.updateSeason(1L, "Updated Season Name", newStartDate, newEndDate);
+    Season updatedSeason =
+        seasonService.updateSeason(1L, "Updated Season Name", newStartDate, newEndDate);
 
     assertNotNull(updatedSeason);
     assertEquals("Updated Season Name", updatedSeason.getName());
@@ -177,19 +177,20 @@ public class SeasonServiceTest {
 
   @Test
   void updateSeason_shouldReturnUpdatedSeason_withPartialUpdates() {
-      LocalDate newStartDate = LocalDate.of(2024, 3, 15);
+    LocalDate newStartDate = LocalDate.of(2024, 3, 15);
 
-      when(seasonRepository.findById(1L)).thenReturn(Optional.of(testSeason));
-      when(seasonRepository.save(any(Season.class))).thenReturn(testSeason);
+    when(seasonRepository.findById(1L)).thenReturn(Optional.of(testSeason));
+    when(seasonRepository.save(any(Season.class))).thenReturn(testSeason);
 
-      Season updatedSeason = seasonService.updateSeason(1L, null, newStartDate, null);
+    Season updatedSeason = seasonService.updateSeason(1L, null, newStartDate, null);
 
-      assertNotNull(updatedSeason);
-      assertEquals("Test Season", updatedSeason.getName()); // Name should not change
-      assertEquals(newStartDate, updatedSeason.getStartDate());
-      assertEquals(LocalDate.of(2023, 12, 31), updatedSeason.getEndDate()); // End date should not change
-      verify(seasonRepository, times(1)).findById(1L);
-      verify(seasonRepository, times(1)).save(any(Season.class));
+    assertNotNull(updatedSeason);
+    assertEquals("Test Season", updatedSeason.getName()); // Name should not change
+    assertEquals(newStartDate, updatedSeason.getStartDate());
+    assertEquals(LocalDate.of(2023, 12, 31), updatedSeason.getEndDate()); // End date should not
+                                                                          // change
+    verify(seasonRepository, times(1)).findById(1L);
+    verify(seasonRepository, times(1)).save(any(Season.class));
   }
 
 
@@ -221,8 +222,8 @@ public class SeasonServiceTest {
   void addWatcherToSeason_shouldAddWatcher() {
     when(seasonRepository.findById(1L)).thenReturn(Optional.of(testSeason));
     when(userRepository.findByUsername(testUser.getUsername())).thenReturn(Optional.of(testUser));
-    when(seasonWatcherRepository.existsBySeasonIdAndUserId(testSeason.getId(), testUser.getId()))
-        .thenReturn(false);
+    when(seasonWatcherRepository.existsById_SeasonIdAndId_UserId(testSeason.getId(),
+        testUser.getId())).thenReturn(false);
     when(seasonWatcherRepository.save(any(SeasonWatcher.class))).thenReturn(testSeasonWatcher);
 
     seasonService.addWatcherToSeason(1L, testUser.getUsername());
@@ -230,7 +231,7 @@ public class SeasonServiceTest {
     verify(seasonWatcherRepository, times(1)).save(any(SeasonWatcher.class));
     verify(seasonRepository, times(1)).findById(1L);
     verify(userRepository, times(1)).findByUsername(testUser.getUsername());
-    verify(seasonWatcherRepository, times(1)).existsBySeasonIdAndUserId(testSeason.getId(),
+    verify(seasonWatcherRepository, times(1)).existsById_SeasonIdAndId_UserId(testSeason.getId(),
         testUser.getId());
   }
 
@@ -253,8 +254,8 @@ public class SeasonServiceTest {
   void addWatcherToSeason_shouldThrowException_whenUserAlreadyWatcher() {
     when(seasonRepository.findById(1L)).thenReturn(Optional.of(testSeason));
     when(userRepository.findByUsername(testUser.getUsername())).thenReturn(Optional.of(testUser));
-    when(seasonWatcherRepository.existsBySeasonIdAndUserId(testSeason.getId(), testUser.getId()))
-        .thenReturn(true);
+    when(seasonWatcherRepository.existsById_SeasonIdAndId_UserId(testSeason.getId(),
+        testUser.getId())).thenReturn(true);
     assertThrows(ConflictException.class,
         () -> seasonService.addWatcherToSeason(1L, testUser.getUsername()));
   }
@@ -263,12 +264,12 @@ public class SeasonServiceTest {
   void removeWatcherFromSeason_shouldRemoveWatcher() {
     when(seasonRepository.findById(1L)).thenReturn(Optional.of(testSeason));
     when(userRepository.findByUsername(testUser.getUsername())).thenReturn(Optional.of(testUser));
-    doNothing().when(seasonWatcherRepository).deleteBySeasonIdAndUserId(any(Long.class),
+    doNothing().when(seasonWatcherRepository).deleteById_SeasonIdAndId_UserId(any(Long.class),
         any(Long.class));
 
     seasonService.removeWatcherFromSeason(1L, testUser.getUsername());
 
-    verify(seasonWatcherRepository, times(1)).deleteBySeasonIdAndUserId(testSeason.getId(),
+    verify(seasonWatcherRepository, times(1)).deleteById_SeasonIdAndId_UserId(testSeason.getId(),
         testUser.getId());
     verify(seasonRepository, times(1)).findById(1L);
     verify(userRepository, times(1)).findByUsername(testUser.getUsername());
