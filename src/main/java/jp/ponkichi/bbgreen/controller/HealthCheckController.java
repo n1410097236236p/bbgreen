@@ -20,6 +20,6 @@ public class HealthCheckController {
   }
 
   // ToDo: パスパラメータとして与えられた文字列を使った Message を返す機能を追加する。
-
+  // ここから始めるよ
   // ToDo: DBへの接続を確認できる機能を追加する
 }
