@@ -4,10 +4,10 @@ import lombok.Getter;
 
 public class Message {
   @Getter
-  private final String text;
+  private final String sayatext;
 
   public Message(String text) {
-    this.text = text;
+    this.sayatext = text;
   }
 }
 
