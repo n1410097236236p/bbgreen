@@ -1,6 +1,7 @@
 package jp.ponkichi.bbgreen.controller;
 
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jp.ponkichi.bbgreen.dto.element.Message;
@@ -20,6 +21,12 @@ public class HealthCheckController {
   }
 
   // ToDo: パスパラメータとして与えられた文字列を使った Message を返す機能を追加する。
+
+  @GetMapping("/api/healthCheck/freemessage/{message}")
+  @SecurityRequirement(name = "")
+  public Message freeMessage(@PathVariable String message) {
+    return new Message(message);
+  }
 
   // ToDo: DBへの接続を確認できる機能を追加する
 }
